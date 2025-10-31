@@ -1,0 +1,32 @@
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import connectDB from "./config/db.js";
+import quizRoutes from "./routes/quizRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import resultRoutes from "./routes/resultRoutes.js";
+
+dotenv.config();
+connectDB();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+app.get("/",(req,res)=>{
+    res.send("QuizNova API is running...");
+});
+
+// Quiz routes
+app.use("/api/quizzes",quizRoutes);
+
+// User Routes
+app.use("/api/users", userRoutes);
+
+// Result routes
+app.use("/api/results", resultRoutes);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT,()=>
+    console.log(`✅ server running on port ${PORT}`)
+);
