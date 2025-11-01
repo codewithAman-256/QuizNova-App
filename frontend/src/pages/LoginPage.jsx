@@ -2,12 +2,12 @@ import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import api from "../utils/api";
 import { useNavigate, Link } from "react-router-dom";
-import { Loader } from "../components/Loader";
+import Loader from "../components/Loader";
 
 const LoginPage = () => {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [loading,setLoading]=useState(false);
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
 
@@ -17,18 +17,19 @@ const LoginPage = () => {
     try {
       const res = await api.post("/users/login", form);
       localStorage.setItem("token", res.data.token);
-      setTimeout(()=>{
-        login(res.data);
-        navigate("/");
-      },1000);
+      login(res.data);
+      navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
-    } finally{
-      setLoading(false);
+    } finally {
+      setLoading(false); // ✅ always stops loader even on error
     }
   };
 
-  if(loading)return<Loader/>;
+  if (loading)
+    return (
+      <Loader/>
+    );
 
   return (
     <div className="flex items-center justify-center min-h-[80vh] px-4 bg-gray-50">
@@ -52,7 +53,10 @@ const LoginPage = () => {
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
           {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-          <button className="bg-indigo-600 text-white px-4 py-2 w-full rounded hover:bg-indigo-700 transition">
+          <button
+            type="submit"
+            className="bg-indigo-600 text-white px-4 py-2 w-full rounded hover:bg-indigo-700 transition"
+          >
             Login
           </button>
         </form>
