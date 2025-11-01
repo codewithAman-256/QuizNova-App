@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://quiznova-app.onrender.com/api "
+  baseURL: "https://quiznova-app-8c5o.onrender.com/api"
   //*|| "http://localhost:5000/api"*/,
 });
 
