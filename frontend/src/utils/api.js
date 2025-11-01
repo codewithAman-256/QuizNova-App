@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://quiznova-app.onrender.com/",
+  baseURL: "https://quiznova-app.onrender.com/api",
 });
 
 // ✅ Get all quizzes
