@@ -2,7 +2,7 @@ import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import api from "../utils/api";
 import { useNavigate, Link } from "react-router-dom";
-import { Loader } from "lucide-react";
+import { Loader } from "../components/Loader";
 
 const LoginPage = () => {
   const { login } = useContext(AuthContext);
@@ -20,10 +20,11 @@ const LoginPage = () => {
       setTimeout(()=>{
         login(res.data);
         navigate("/");
-        setLoading(false);
       },1000);
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
+    } finally{
+      setLoading(false);
     }
   };
 
