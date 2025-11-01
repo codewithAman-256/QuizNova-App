@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const HomePage = () => {
+
   const user = JSON.parse(localStorage.getItem("user"));
   
   return (
