@@ -10,15 +10,21 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://quiznovabyaman.netlify.app"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
-app.get("/",(req,res)=>{
-    res.send("QuizNova API is running...");
+app.get("/", (req, res) => {
+  res.send("QuizNova API is running...");
 });
 
 // Quiz routes
-app.use("/api/quizzes",quizRoutes);
+app.use("/api/quizzes", quizRoutes);
 
 // User Routes
 app.use("/api/users", userRoutes);
@@ -27,6 +33,4 @@ app.use("/api/users", userRoutes);
 app.use("/api/results", resultRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT,()=>
-    console.log(`✅ server running on port ${PORT}`)
-);
+app.listen(PORT, () => console.log(`✅ server running on port ${PORT}`));
