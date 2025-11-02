@@ -1,7 +1,15 @@
 const Loader = ({ text = "Loading..." }) => (
-  <div className="flex flex-col items-center justify-center py-20">
-    <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-    <p className="text-md font-medium text-indigo-600 mt-3 animate-pulse">{text}</p>
+  <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+    {/* Spinner */}
+    <div className="relative w-12 h-12">
+      <div className="absolute inset-0 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
+      <div className="absolute inset-1 rounded-full border-4 border-indigo-200 border-t-transparent animate-spin-slow"></div>
+    </div>
+
+    {/* Loading Text */}
+    <p className="text-lg font-semibold text-indigo-600 animate-pulse tracking-wide">
+      {text}
+    </p>
   </div>
 );
 

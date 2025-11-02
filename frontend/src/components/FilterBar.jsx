@@ -10,7 +10,7 @@ const FilterBar = ({ category, setCategory, difficulty, setDifficulty }) => {
   };
 
   return (
-    <div className="filter-bar flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-6 p-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl shadow-lg w-full max-w-5xl mx-auto backdrop-blur-sm">
+    <div className="filter-bar flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-6 p-4 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl shadow-lg w-full max-w-5xl mx-auto backdrop-blur-sm">
       
       {/* Category Filter */}
       <select
@@ -24,6 +24,9 @@ const FilterBar = ({ category, setCategory, difficulty, setDifficulty }) => {
         <option value="JavaScript">JavaScript</option>
         <option value="React">React</option>
         <option value="Node.js">Node.js</option>
+        <option value="Express.js">Express.js</option>
+        <option value="HTTP Methods">HTTP Methods</option>
+        <option value="MongoDB">MongoDB</option>
       </select>
 
       {/* Difficulty Filter */}

@@ -2,7 +2,7 @@ import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import api from "../utils/api";
 import { useNavigate, Link } from "react-router-dom";
-import { Loader } from "../components/Loader";
+import  Loader  from "../components/Loader";
 
 const LoginPage = () => {
   const { login } = useContext(AuthContext);

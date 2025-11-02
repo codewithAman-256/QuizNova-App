@@ -1,18 +1,49 @@
-import React from "react";
+import React, { useState } from "react";
 
-const QuizCard = ({ quiz }) => {
+const QuizCard = ({ quiz, isPractice = false }) => {
+  const [selected, setSelected] = useState(null);
+  const [isAnswered, setIsAnswered] = useState(false);
+
+  const handleSelect = (option) => {
+    if (isAnswered) return; // prevent double click
+    setSelected(option);
+    setIsAnswered(true);
+  };
+
+  const getOptionClass = (option) => {
+    const isCorrect =
+      quiz.correctAnswer &&
+      option.trim().toLowerCase() === quiz.correctAnswer.trim().toLowerCase();
+
+    if (isAnswered) {
+      if (option === selected && isCorrect)
+        return "bg-green-100 text-green-800 border-green-400";
+      if (option === selected && !isCorrect)
+        return "bg-red-100 text-red-800 border-red-400";
+      if (isCorrect) return "bg-green-50 text-green-700 border-green-200";
+      return "bg-gray-100 text-gray-700";
+    }
+
+    // before answering
+    return isPractice
+      ? isCorrect
+        ? "bg-gray-100 hover:bg-green-100 hover:text-green-800"
+        : "bg-gray-100 hover:bg-gray-200"
+      : "bg-gray-100 hover:bg-indigo-100 hover:text-indigo-700";
+  };
+
   return (
     <div
       className="quiz-card bg-white border border-gray-200 rounded-2xl 
       shadow-md hover:shadow-xl hover:-translate-y-1 
       transition-all duration-300 p-5 sm:p-6 flex flex-col 
-      justify-between h-full w-full"
+      justify-between h-full w-full overflow-hidden box-border"
     >
       {/* ✅ Question */}
       <h3
         className="question text-base sm:text-lg md:text-xl 
         font-semibold mb-4 text-gray-800 leading-snug 
-        text-center sm:text-left"
+        text-center sm:text-left break-words"
       >
         {quiz.question}
       </h3>
@@ -28,10 +59,19 @@ const QuizCard = ({ quiz }) => {
             {quiz.options.map((option, index) => (
               <li
                 key={index}
-                className="option py-2.5 px-4 bg-gray-100 rounded-lg 
-                hover:bg-indigo-100 hover:text-indigo-700 cursor-pointer 
-                transition-all duration-200 ease-in-out text-center sm:text-left 
-                text-sm sm:text-base font-medium break-normal whitespace-normal"
+                onClick={() => handleSelect(option)}
+                className={`option flex items-center justify-center sm:justify-start
+                  min-h-[60px] sm:min-h-[70px] px-4 py-2 
+                  rounded-lg font-medium text-sm sm:text-base
+                  text-center sm:text-left break-words
+                  cursor-pointer transition-all duration-200 ease-in-out 
+                  ${getOptionClass(option)}
+                `}
+                style={{
+                  wordBreak: "break-word",
+                  overflowWrap: "anywhere",
+                  whiteSpace: "normal",
+                }}
               >
                 {option}
               </li>

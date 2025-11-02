@@ -50,7 +50,7 @@ const QuizList = () => {
   return (
     <div className="p-4 sm:p-6 min-h-[80vh] bg-linear-to-br from-gray-50 via-white to-indigo-50 transition-all duration-300">
       {/* Header */}
-      <h1 className="text-3xl font-extrabold text-indigo-700 mb-6 text-center sm:text-left drop-shadow-sm">
+      <h1 className="text-3xl font-bold text-indigo-700 mb-6 text-center sm:text-center drop-shadow-sm" >
         🧠 Available Quizzes
       </h1>
 
