@@ -1,14 +1,39 @@
 import Quiz from "../models/Quiz.js";
 
-// ✅ Get all quizzes
+// ✅ Get quizzes (for both users & admins)
 export const getQuizzes = async (req, res) => {
   try {
+    // Extract optional query params
+    const { search = "", page , limit  } = req.query;
+
+    // If admin wants pagination or search
+    if (page && limit) {
+      const query = search
+        ? { question: { $regex: search, $options: "i" } }
+        : {};
+
+      const total = await Quiz.countDocuments(query);
+      const quizzes = await Quiz.find(query)
+        .skip((page - 1) * limit)
+        .limit(Number(limit));
+
+      return res.json({
+        quizzes,
+        total,
+        totalPages: Math.ceil(total / limit),
+        currentPage: Number(page),
+      });
+    }
+
+  // Otherwise: normal user request → return all quizzes
     const quizzes = await Quiz.find();
     res.json(quizzes);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+
+
 
 // ✅ Get quizzes by category (e.g. /api/quizzes/category/JavaScript)
 export const getQuizzesByCategory = async (req, res) => {

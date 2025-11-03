@@ -12,8 +12,10 @@
   "dependencies": {
     "@headlessui/react": "^2.2.9",
     "axios": "^1.12.2",
+    "chart.js": "^4.5.1",
     "lucide-react": "^0.548.0",
     "react": "^19.1.1",
+    "react-chartjs-2": "^5.3.1",
     "react-circular-progressbar": "^2.2.0",
     "react-confetti": "^6.4.0",
     "react-dom": "^19.1.1",

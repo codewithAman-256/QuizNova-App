@@ -5,7 +5,7 @@ import {
   updateQuiz,
   deleteQuiz,
   getFiveQuizzes,
-  getQuizzesByCategory
+  getQuizzesByCategory,
 } from "../controllers/quizController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -13,17 +13,12 @@ import { isAdmin } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
-router.route("/")
-  .get(getQuizzes)
-  .post(protect, isAdmin, createQuiz);
+router.route("/").get(getQuizzes).post(protect, isAdmin, createQuiz);
 
 router.get("/getFiveQuizzes", getFiveQuizzes);
-
 // ✅ New route for category-based quizzes
 router.get("/category/:category", getQuizzesByCategory);
 
-router.route("/:id")
-  .put(protect, updateQuiz)
-  .delete(protect, deleteQuiz);
+router.route("/:id").put(protect, updateQuiz).delete(protect, deleteQuiz);
 
 export default router;

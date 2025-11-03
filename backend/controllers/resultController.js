@@ -1,4 +1,4 @@
-import Result from "../models/resultModel.js";
+import Result from "../models/Result.js";
 
 export const saveResult = async (req, res) => {
   try {

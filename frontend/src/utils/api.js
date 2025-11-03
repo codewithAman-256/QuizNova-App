@@ -1,14 +1,24 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://quiznova-app-8c5o.onrender.com/api",
+ // baseURL: "https://quiznova-app-8c5o.onrender.com/api",
 
-  //*|| "http://localhost:5000/api"*/,
+  baseURL: "http://localhost:5000/api",
 });
 
-// ✅ Get all quizzes
-export const getQuizzes = async () => {
-  const res = await api.get("/quizzes");
+// ✅ Unified Get Quizzes (for both Users & Admin)
+export const getQuizzes = async (options = {}) => {
+  const { search = "", page, limit, category, difficulty } = options;
+
+  // Build params dynamically (only add if defined)
+  const params = {};
+  if (search) params.search = search;
+  if (page) params.page = page;
+  if (limit) params.limit = limit;
+  if (category) params.category = category;
+  if (difficulty) params.difficulty = difficulty;
+
+  const res = await api.get(`/quizzes`, { params });
   return res.data;
 };
 
@@ -65,5 +75,14 @@ export const getUserResults = async (userId) => {
   const res = await api.get(`/results/user/${userId}`);
   return res.data;
 };
+
+//✅ get admin stats
+export const getAdminStats = async(token)=>{
+  const res = await api.get("/admin/stats",{
+    headers:{Authorization:`Bearer ${token}`},
+  });
+  return res.data;
+}
+
 
 export default api;
