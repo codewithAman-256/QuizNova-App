@@ -3,19 +3,44 @@ import Quiz from "../models/Quiz.js";
 // ✅ Get quizzes (for both users & admins)
 export const getQuizzes = async (req, res) => {
   try {
-    // Extract optional query params
-    const { search = "", page , limit  } = req.query;
+    const { search = "", page, limit, category, difficulty, random } = req.query;
 
-    // If admin wants pagination or search
+    // 🎯 Build dynamic query
+    const query = {};
+
+    // Optional search by question (case-insensitive)
+    if (search.trim()) {
+      query.question = { $regex: search, $options: "i" };
+    }
+
+    // Optional category filter
+    if (category && category !== "") {
+      query.category = category;
+    }
+
+    // Optional difficulty filter
+    if (difficulty && difficulty !== "") {
+      query.difficulty = difficulty;
+    }
+
+    // 🎲 Random quizzes mode (for user home/quiz list)
+    if (random === "true") {
+      const count = await Quiz.countDocuments(query);
+      const sampleSize = limit ? parseInt(limit) : 5;
+      const quizzes = await Quiz.aggregate([
+        { $match: query },
+        { $sample: { size: sampleSize } },
+      ]);
+      return res.json(quizzes);
+    }
+
+    // 📑 Pagination (for admin or long lists)
     if (page && limit) {
-      const query = search
-        ? { question: { $regex: search, $options: "i" } }
-        : {};
-
       const total = await Quiz.countDocuments(query);
       const quizzes = await Quiz.find(query)
         .skip((page - 1) * limit)
-        .limit(Number(limit));
+        .limit(Number(limit))
+        .sort({ createdAt: -1 });
 
       return res.json({
         quizzes,
@@ -25,13 +50,16 @@ export const getQuizzes = async (req, res) => {
       });
     }
 
-  // Otherwise: normal user request → return all quizzes
-    const quizzes = await Quiz.find();
+    // 🧾 Default: return all quizzes
+    const quizzes = await Quiz.find(query).sort({ createdAt: -1 });
     res.json(quizzes);
+
   } catch (error) {
+    console.error("❌ Error fetching quizzes:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+
 
 
 

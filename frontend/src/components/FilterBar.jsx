@@ -1,64 +1,58 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
 
-const FilterBar = ({ category, setCategory, difficulty, setDifficulty }) => {
-  const navigate = useNavigate();
-
-  const handleReset = () => {
-    setCategory("");
-    setDifficulty("");
-  };
-
+const FilterBar = ({
+  category,
+  setCategory,
+  difficulty,
+  setDifficulty,
+  search,
+  setSearch,
+}) => {
   return (
-    <div className="filter-bar flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-6 p-4 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl shadow-lg w-full max-w-5xl mx-auto backdrop-blur-sm">
-      
-      {/* Category Filter */}
-      <select
-        aria-label="Filter by category"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        className="select-filter p-3 rounded-lg w-full sm:w-44 md:w-56 text-gray-800 bg-white bg-opacity-90 border border-transparent hover:shadow-md focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all"
-      >
-        <option value="">All Categories</option>
-        <option value="MERN Stack">MERN Stack</option>
-        <option value="JavaScript">JavaScript</option>
-        <option value="React">React</option>
-        <option value="Node.js">Node.js</option>
-        <option value="Express.js">Express.js</option>
-        <option value="HTTP Methods">HTTP Methods</option>
-        <option value="MongoDB">MongoDB</option>
-      </select>
+    <div className="w-full max-w-5xl mx-auto bg-white/80 backdrop-blur-md p-4 sm:p-6 rounded-2xl shadow-md transition-all duration-300 hover:shadow-lg border border-gray-100">
+      <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 justify-between">
+        {/* ✅ Search Bar */}
+        <div className="relative w-full sm:w-1/3">
+          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search quizzes..."
+            className="w-full pl-9 pr-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-gray-700 placeholder-gray-400"
+          />
+        </div>
 
-      {/* Difficulty Filter */}
-      <select
-        aria-label="Filter by difficulty"
-        value={difficulty}
-        onChange={(e) => setDifficulty(e.target.value)}
-        className="select-filter p-3 rounded-lg w-full sm:w-44 md:w-56 text-gray-800 bg-white bg-opacity-90 border border-transparent hover:shadow-md focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all"
-      >
-        <option value="">All Difficulty</option>
-        <option value="Easy">Easy</option>
-        <option value="Medium">Medium</option>
-        <option value="Hard">Hard</option>
-      </select>
+        {/* Category Filter */}
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full sm:w-1/4 px-3 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+        >
+          <option value="">All Categories</option>
+          <option value="MERN Stack">MERN Stack</option>
+          <option value="JavaScript">JavaScript</option>
+          <option value="React">React</option>
+          <option value="Node.js">Node.js</option>
+          <option value="Database">Database</option>
+        </select>
 
-      {/* Reset Filters Button */}
-      <button
-        onClick={handleReset}
-        className="p-3 w-full sm:w-44 md:w-56 bg-white bg-opacity-90 text-gray-800 rounded-lg border border-transparent hover:bg-indigo-100 hover:text-indigo-700 focus:ring-2 focus:ring-indigo-300 focus:outline-none transition-all font-medium"
-      >
-        Reset Filters
-      </button>
+        {/* Difficulty Filter */}
+        <select
+          value={difficulty}
+          onChange={(e) => setDifficulty(e.target.value)}
+          className="w-full sm:w-1/4 px-3 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+        >
+          <option value="">All Difficulty</option>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
 
-      {/* Optional Start Quiz Button */}
-      {/* 
-      <button
-        onClick={() => navigate("/attempt")}
-        className="p-3 w-full sm:w-44 md:w-56 bg-white text-gray-800 rounded-lg border border-transparent hover:bg-indigo-100 hover:text-indigo-700 focus:ring-2 focus:ring-indigo-300 transition-all font-medium"
-      >
-        Start Quiz
-      </button> 
-      */}
+      {/* Subtle Animation Underline */}
+      <div className="h-[2px] mt-5 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 rounded-full animate-pulse" />
     </div>
   );
 };

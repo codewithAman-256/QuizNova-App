@@ -1,16 +1,29 @@
 import axios from "axios";
 
 const api = axios.create({
- baseURL: "https://quiznova-app-8c5o.onrender.com/api",
+// baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
 
-// baseURL: "http://localhost:5000/api",
+baseURL: "https://quiznova-app-8c5o.onrender.com/api",
+
+});
+
+// ✅ Automatically attach token to every request
+api.interceptors.request.use((config) => {
+  const token =
+    localStorage.getItem("token") ||
+    JSON.parse(localStorage.getItem("user"))?.token;
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
 });
 
 // ✅ Unified Get Quizzes (for both Users & Admin)
 export const getQuizzes = async (options = {}) => {
   const { search = "", page, limit, category, difficulty } = options;
 
-  // Build params dynamically (only add if defined)
   const params = {};
   if (search) params.search = search;
   if (page) params.page = page;
@@ -36,37 +49,25 @@ export const getFiveQuizzes = async () => {
 
 // ✅ Create new quiz (Admin only)
 export const createQuiz = async (quizData) => {
-  const token = localStorage.getItem("token");
-  const res = await api.post("/quizzes", quizData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const res = await api.post("/quizzes", quizData);
   return res.data;
 };
 
 // ✅ Update quiz
 export const updateQuiz = async (id, quizData) => {
-  const token = localStorage.getItem("token");
-  const res = await api.put(`/quizzes/${id}`, quizData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const res = await api.put(`/quizzes/${id}`, quizData);
   return res.data;
 };
 
 // ✅ Delete quiz
 export const deleteQuiz = async (id) => {
-  const token = localStorage.getItem("token");
-  const res = await api.delete(`/quizzes/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const res = await api.delete(`/quizzes/${id}`);
   return res.data;
 };
 
 // ✅ Save quiz result
 export const saveResult = async (resultData) => {
-  const token = localStorage.getItem("token");
-  const res = await api.post("/results", resultData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const res = await api.post("/results", resultData);
   return res.data;
 };
 
@@ -76,13 +77,10 @@ export const getUserResults = async (userId) => {
   return res.data;
 };
 
-//✅ get admin stats
-export const getAdminStats = async(token)=>{
-  const res = await api.get("/admin/stats",{
-    headers:{Authorization:`Bearer ${token}`},
-  });
+// ✅ Get admin stats
+export const getAdminStats = async () => {
+  const res = await api.get("/admin/stats");
   return res.data;
-}
-
+};
 
 export default api;

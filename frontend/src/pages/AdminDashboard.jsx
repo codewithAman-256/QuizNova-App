@@ -40,7 +40,7 @@ const AdminDashboard = () => {
     categoryStats: [],
   });
   const [loading, setLoading] = useState(true);
-    // 🧭 Pagination
+  // 🧭 Pagination
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -74,17 +74,16 @@ const AdminDashboard = () => {
     }
   };
 
-const fetchQuizzes = async () => {
-  try {
-    const data = await getQuizzes({ search, page, limit: 5 }); // ✅ pass search + pagination
-    setQuizzes(data.quizzes || []);
-    setTotalPages(data.totalPages || 1);
-    setFilteredQuizzes(data.quizzes || []);
-  } catch (error) {
-    toast.error("Failed to load quizzes");
-  }
-};
-
+  const fetchQuizzes = async () => {
+    try {
+      const data = await getQuizzes({ search, page, limit: 5 }); // ✅ pass search + pagination
+      setQuizzes(data.quizzes || []);
+      setTotalPages(data.totalPages || 1);
+      setFilteredQuizzes(data.quizzes || []);
+    } catch (error) {
+      toast.error("Failed to load quizzes");
+    }
+  };
 
   // 🔍 Filter logic
   useEffect(() => {
@@ -148,7 +147,9 @@ const fetchQuizzes = async () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] text-indigo-600">
         <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-3"></div>
-        <p className="text-lg font-medium animate-pulse">Loading Dashboard...</p>
+        <p className="text-lg font-medium animate-pulse">
+          Loading Dashboard...
+        </p>
       </div>
     );
   }
@@ -300,28 +301,28 @@ const fetchQuizzes = async () => {
           </tbody>
         </table>
       </div>
-      
+
       {/* 📄 Pagination Controls */}
 
       <div className="flex justify-center mt-6 gap-2">
-  <button
-    disabled={page === 1}
-    onClick={() => setPage(page - 1)}
-    className="px-4 py-1 bg-indigo-500 text-white rounded disabled:bg-gray-300"
-  >
-    Prev
-  </button>
-  <span className="font-medium">
-    Page {page} of {totalPages}
-  </span>
-  <button
-    disabled={page === totalPages}
-    onClick={() => setPage(page + 1)}
-    className="px-4 py-1 bg-indigo-500 text-white rounded disabled:bg-gray-300"
-  >
-    Next
-  </button>
-</div>
+        <button
+          disabled={page === 1}
+          onClick={() => setPage(page - 1)}
+          className="px-4 py-1 bg-indigo-500 text-white rounded disabled:bg-gray-300"
+        >
+          Prev
+        </button>
+        <span className="font-medium">
+          Page {page} of {totalPages}
+        </span>
+        <button
+          disabled={page === totalPages}
+          onClick={() => setPage(page + 1)}
+          className="px-4 py-1 bg-indigo-500 text-white rounded disabled:bg-gray-300"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };
