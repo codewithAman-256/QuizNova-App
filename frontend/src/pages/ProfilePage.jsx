@@ -5,7 +5,7 @@ import AchievementCard from "../components/AchievementCard";
 import toast from "react-hot-toast";
 
 const ProfilePage = () => {
-  const { user, setUser } = useContext(AuthContext);
+  const { setUser } = useContext(AuthContext);
   const [profile, setProfile] = useState(null);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
