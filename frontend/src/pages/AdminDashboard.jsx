@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { getQuizzes, getAdminStats, deleteQuiz } from "../utils/api";
 import QuizForm from "../components/QuizForm";
@@ -275,13 +276,13 @@ const AdminDashboard = () => {
                 <td className="p-2 sm:p-3 text-center space-x-2">
                   <button
                     onClick={() => setEditingQuiz(quiz)}
-                    className="bg-blue-500 text-white px-3 m-1 pt-1 pb-1 pl-6 pr-6  rounded-full hover:bg-blue-600 hover:text-amber-950 transition"
+                    className="bg-blue-500 text-white px-3 m-1 pt-1 pb-1 pl-6 pr-6  rounded-full hover:text-black hover:bg-green-500 transition"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(quiz._id)}
-                    className="bg-red-500 text-white px-3 pt-1 pb-1 pl-4 pr-4 rounded-full hover:bg-red-600 hover:text-amber-950 transition"
+                    className="bg-red-500 text-white px-3 pt-1 pb-1 pl-4 pr-4 rounded-full hover:bg-black hover:text-red-500 transition"
                   >
                     Delete
                   </button>

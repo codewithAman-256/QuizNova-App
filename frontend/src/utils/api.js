@@ -1,9 +1,9 @@
 import axios from "axios";
 
 const api = axios.create({
-// baseURL: import.meta.env.VITE_API_URL || "http:////localhost:5000/api",
+ baseURL: import.meta.env.VITE_API_URL || "http:////localhost:5000/api",
 
-baseURL: "https://quiznova-app-8c5o.onrender.com/api",
+// baseURL: "https://quiznova-app-8c5o.onrender.com/api",
 
 });
 
@@ -80,6 +80,12 @@ export const getUserResults = async (userId) => {
 // ✅ Get admin stats
 export const getAdminStats = async () => {
   const res = await api.get("/admin/stats");
+  return res.data;
+};
+
+// ✅ Get Leaderboard
+export const getLeaderboard =async () => {
+  const res =await api.get("/leaderboard");
   return res.data;
 };
 

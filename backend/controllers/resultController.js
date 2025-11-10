@@ -17,6 +17,26 @@ export const saveResult = async (req, res) => {
 
     const result = new Result({ userId, score, totalQuestions, percentage });
     await result.save();
+    
+  // Update Quiz Submission Logic (to track streak)  
+    const today = new Date().toDateString();
+
+    if (
+      user.lastQuizDate &&
+      new Date(user.lastQuizDate).toDateString() === today
+    ) {
+      // same day quiz - no streak change
+    } else if (
+      user.lastQuizDate &&
+      new Date(today) - new Date(user.lastQuizDate).setHours(0, 0, 0, 0) ===
+        86400000
+    ) {
+      user.streakCount += 1;
+    } else {
+      user.streakCount = 1;
+    }
+    user.lastQuizDate = new Date();
+    await user.save();
 
     res.status(201).json({ message: "✅ Result saved successfully", result });
   } catch (error) {
