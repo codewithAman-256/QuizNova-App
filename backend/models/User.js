@@ -8,6 +8,8 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     role: { type: String, enum: ["user", "admin"], default: "user" },
     avatar: { type: String, default: "" },
+    streakCount: { type: Number, default: 0 },
+    lastQuizDate: { type: Date, default: null },
   },
   { timestamps: true }
 );

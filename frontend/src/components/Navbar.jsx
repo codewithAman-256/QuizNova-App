@@ -5,15 +5,15 @@ import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, logout } = useContext(AuthContext);
   const [showMenu, setShowMenu] = useState(false);
+  const { user, logout } = useContext(AuthContext);
 
   return (
     <>
       <nav className="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
+            {/* 🌟 Logo */}
             <Link
               to="/"
               className="text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
@@ -21,7 +21,7 @@ const Navbar = () => {
               QuizNova
             </Link>
 
-            {/* Desktop Links */}
+            {/* 💻 Desktop Links */}
             <div className="hidden md:flex items-center space-x-6">
               <Link
                 to="/"
@@ -42,7 +42,7 @@ const Navbar = () => {
                 Dashboard
               </Link>
 
-              {/* Admin Link */}
+              {/* 🧑‍💼 Admin Only */}
               {user?.role === "admin" && (
                 <Link
                   to="/admin"
@@ -52,15 +52,26 @@ const Navbar = () => {
                 </Link>
               )}
 
-              {/* Profile Dropdown */}
+              {/* 👤 Profile Dropdown */}
               {user ? (
                 <div className="relative">
-                  <button
+                  <div
                     onClick={() => setShowMenu(!showMenu)}
-                    className="flex items-center gap-2 font-medium text-gray-700 hover:text-blue-600"
+                    className="relative cursor-pointer"
                   >
-                    👋 {user.name || "User"}
-                  </button>
+                    {/* 🔥 Streak Flame (optional) */}
+                    {user.streakCount > 0 && (
+                      <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow">
+                        🔥 {user.streakCount}
+                      </div>
+                    )}
+
+                    <img
+                      src={user.avatar || "/default-avatar.png"}
+                      alt="Profile"
+                      className="w-10 h-10 rounded-full border-2 border-yellow-400 object-cover hover:scale-105 transition"
+                    />
+                  </div>
 
                   {showMenu && (
                     <div className="absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg py-2 z-50">
@@ -108,7 +119,7 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Mobile Menu Button */}
+            {/* 📱 Mobile Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="md:hidden text-gray-700 focus:outline-none"
@@ -118,7 +129,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* 📱 Mobile Menu */}
         {isOpen && (
           <div className="md:hidden bg-white/95 backdrop-blur-sm border-t border-gray-100 shadow-lg">
             <div className="flex flex-col items-center space-y-4 py-5">
@@ -159,6 +170,7 @@ const Navbar = () => {
                   Admin
                 </Link>
               )}
+
               {user ? (
                 <>
                   <Link
@@ -201,10 +213,10 @@ const Navbar = () => {
         )}
       </nav>
 
-      {/* Floating Leaderboard Button (Mobile) */}
+      {/* 🏆 Floating Leaderboard Button (Mobile) */}
       <Link
         to="/leaderboard"
-        className="fixed bottom-6 right-6 bg-linear-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-lg hover:scale-110 transition-all md:hidden"
+        className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-lg hover:scale-110 transition-all md:hidden"
       >
         <Trophy size={22} />
       </Link>

@@ -19,8 +19,6 @@ const resultSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    streakCount: { type: Number, default: 0 },
-    lastQuizDate: { type: Date, default: null },
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true }

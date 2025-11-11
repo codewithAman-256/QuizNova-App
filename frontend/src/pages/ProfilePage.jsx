@@ -2,11 +2,13 @@ import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import api from "../utils/api";
 import AchievementCard from "../components/AchievementCard";
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import Loader from "../components/Loader"; // ✅ custom loader
+import Loader from "../components/Loader";
 
 const ProfilePage = () => {
-  const { user } = useContext(AuthContext);
+  // eslint-disable-next-line no-unused-vars
+  const { user, setUser } = useContext(AuthContext); // ✅ also include setUser to sync avatar globally
   const [profile, setProfile] = useState(null);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,18 +35,19 @@ const ProfilePage = () => {
     fetchProfile();
   }, []);
 
-  // ✅ Update Profile
+  // ✅ Update Profile Info
   const handleUpdate = async () => {
     try {
-      await api.put("/profile", formData);
+      const res = await api.put("/profile", formData);
       setProfile({ ...profile, ...formData });
+      setUser((prev) => ({ ...prev, ...formData })); // keep AuthContext in sync
       setEditMode(false);
     } catch (err) {
       console.error("Error updating profile:", err);
     }
   };
 
-  // ✅ Avatar Upload (No page reload)
+  // ✅ Avatar Upload (instant update)
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -57,6 +60,7 @@ const ProfilePage = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setProfile((prev) => ({ ...prev, avatar: res.data.avatar }));
+      setUser((prev) => ({ ...prev, avatar: res.data.avatar })); // update context
     } catch (err) {
       console.error("Avatar upload failed:", err);
     }
@@ -99,13 +103,14 @@ const ProfilePage = () => {
               Change
             </label>
             <input
-              id="avatar" // ✅ Added id
+              id="avatar"
               type="file"
               className="hidden"
               onChange={handleAvatarChange}
             />
           </div>
 
+          {/* ✅ Streak Display */}
           <p className="mt-3 text-orange-500 text-lg font-semibold">
             🔥 {profile.streakCount || 0}-day streak
           </p>
