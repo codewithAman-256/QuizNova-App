@@ -2,33 +2,70 @@ import React from "react";
 
 const ResultTable = ({ results }) => {
   if (!results || results.length === 0) {
-    return <p className="text-gray-500 text-center">No results yet. Take your first quiz!</p>;
+    return (
+      <p className="text-gray-500 text-center mt-4 text-lg italic">
+        🚀 No results yet — Start your first quiz!
+      </p>
+    );
   }
 
   return (
-    <div className="overflow-x-auto mt-6">
-      <table className="min-w-full border border-gray-200">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="px-4 py-2 border">Date</th>
-            <th className="px-4 py-2 border">Score</th>
-            <th className="px-4 py-2 border">Total</th>
-            <th className="px-4 py-2 border">Percentage</th>
+    <div className="w-full overflow-x-auto bg-white/90 backdrop-blur-xl border border-indigo-100 rounded-2xl shadow-xl p-4 sm:p-6">
+
+      <table className="min-w-max w-full text-sm sm:text-base">
+        <thead>
+          <tr className="bg-indigo-600 text-white">
+            <th className="p-3 text-left whitespace-nowrap">📅 Date</th>
+            <th className="p-3 text-left whitespace-nowrap">📊 Score</th>
+            <th className="p-3 text-left whitespace-nowrap">❓ Total Questions</th>
+            <th className="p-3 text-left whitespace-nowrap">📈 Percentage</th>
           </tr>
         </thead>
+
         <tbody>
-          {results.map((r, i) => (
-            <tr key={i} className="text-center hover:bg-gray-50">
-              <td className="border px-4 py-2">
-                {new Date(r.createdAt).toLocaleDateString()}
-              </td>
-              <td className="border px-4 py-2">{r.score}</td>
-              <td className="border px-4 py-2">{r.totalQuestions}</td>
-              <td className="border px-4 py-2">{r.percentage}%</td>
-            </tr>
-          ))}
+          {results.map((r, i) => {
+            const percentage = r.percentage;
+            const badgeColor =
+              percentage >= 80
+                ? "bg-green-500"
+                : percentage >= 50
+                ? "bg-yellow-500"
+                : "bg-red-500";
+
+            return (
+              <tr
+                key={i}
+                className="border-t hover:bg-indigo-50/70 transition-all"
+              >
+                {/* DATE */}
+                <td className="p-3 font-medium text-gray-800 whitespace-nowrap">
+                  {new Date(r.createdAt).toLocaleDateString()}
+                </td>
+
+                {/* SCORE */}
+                <td className="p-3 font-semibold text-indigo-700 whitespace-nowrap">
+                  {r.score}
+                </td>
+
+                {/* TOTAL */}
+                <td className="p-3 text-gray-700 whitespace-nowrap">
+                  {r.totalQuestions}
+                </td>
+
+                {/* PERCENTAGE BADGE */}
+                <td className="p-3 whitespace-nowrap">
+                  <span
+                    className={`px-3 py-1 rounded-full text-white text-xs sm:text-sm font-medium ${badgeColor}`}
+                  >
+                    {percentage}%
+                  </span>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
+
     </div>
   );
 };

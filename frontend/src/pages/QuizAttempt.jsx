@@ -4,6 +4,7 @@ import QuizQuestion from "../components/QuizQuestion";
 import ProgressBar from "../components/ProgressBar";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import Loader from "../components/Loader";
 
 const QuizAttempt = () => {
   const [quizzes, setQuizzes] = useState([]);
@@ -70,15 +71,10 @@ const QuizAttempt = () => {
   };
 
   // ✅ Loading state
-  if (loading) {
+  if (loading)
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-lg text-blue-600 font-semibold animate-pulse">
-          Loading quiz...
-        </p>
-      </div>
+        <Loader text="Wait For Starting Quiz..."/>
     );
-  }
 
   // ✅ Error state
   if (error) {

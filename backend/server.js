@@ -9,6 +9,7 @@ import resultRoutes from "./routes/resultRoutes.js";
 import adminStatsRoutes from "./routes/adminRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import leaderboardRoutes from "./routes/leaderboardRoutes.js";
+import dailyChallengeRoutes from "./routes/dailyRoutes.js";
 import cloudinary from "./config/cloudinary.js";
 
 dotenv.config();
@@ -47,6 +48,8 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 // Leaderboard Routes
 app.use("/api/leaderboard", leaderboardRoutes);
 
+// DailyChallenge Routes
+app.use("/api/daily", dailyChallengeRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ server running on port ${PORT}`));

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { createQuiz, updateQuiz } from "../utils/api";
 import { useAuth } from "../hooks/useAuth";
@@ -66,6 +67,9 @@ const QuizForm = ({ quiz, onSuccess }) => {
       className="p-4 bg-gray-50 rounded shadow border border-gray-200"
     >
       <div className="mb-4">
+        <h2 className="text-2xl font-semibold mb-5 text-indigo-700">
+    🧩 Manage Quizzes
+  </h2>
         <input
           type="text"
           name="question"

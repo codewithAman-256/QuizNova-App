@@ -67,7 +67,10 @@ const QuizList = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [page]);
 
-  if (loading) return <Loader />;
+    if (loading)
+    return (
+        <Loader text="Loading Quizzes..."/>
+    );
 
   if (error)
     return (
@@ -84,13 +87,16 @@ const QuizList = () => {
 
       {/* Filter Bar */}
       <FilterBar
-        category={category}
-        setCategory={setCategory}
-        difficulty={difficulty}
-        setDifficulty={setDifficulty}
-        search={search}
-        setSearch={setSearch}
-      />
+  search={search}
+  setSearch={setSearch}
+  category={category}
+  setCategory={setCategory}
+  difficulty={difficulty}
+  setDifficulty={setDifficulty}
+  categories={[...new Set(quizzes.map(q => q.category))]}
+  setPage={setPage}
+/>
+
 
       {/* Fetching Indicator */}
       {fetching && (

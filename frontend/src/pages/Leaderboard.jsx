@@ -1,7 +1,9 @@
+/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { getLeaderboard } from "../utils/api.js";
 import Loader from "../components/Loader.jsx";
 import { Medal, Trophy, Sparkles } from "lucide-react";
+
 import { motion } from "framer-motion";
 
 const Leaderboard = () => {
@@ -22,7 +24,7 @@ const Leaderboard = () => {
     fetchLeaderboard();
   }, []);
 
-  if (loading) return <Loader />;
+  if (loading) return <Loader text="Loading Leaderboard..."/>;
 
   return (
     <div className="min-h-[85vh] bg-gradient-to-br from-indigo-50 via-white to-purple-100 p-4 sm:p-6">

@@ -3,9 +3,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Confetti from "react-confetti";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import Loader from "../components/Loader";
 
 const ResultPage = () => {
   const { state } = useLocation();
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
@@ -31,11 +33,21 @@ const ResultPage = () => {
 
   // 🪟 Handle window resize
   useEffect(() => {
-    const handleResize = () =>
+    try {
+      setLoading(true);
+          const handleResize = () =>
       setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+
   }, []);
+
+  if (loading) return <Loader text="Wait For Result..." />;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-indigo-50 to-gray-100 relative px-4 sm:px-6">

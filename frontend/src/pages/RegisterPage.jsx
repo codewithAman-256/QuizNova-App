@@ -4,13 +4,13 @@ import { useNavigate, Link } from "react-router-dom";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/users/register", form);
+      await api.post("/users/register", form); 
       navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
@@ -23,6 +23,7 @@ const RegisterPage = () => {
         <h2 className="text-2xl font-bold mb-4 text-center text-indigo-700">
           Register on QuizNova
         </h2>
+
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -31,6 +32,7 @@ const RegisterPage = () => {
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
+
           <input
             type="email"
             placeholder="Email"
@@ -38,6 +40,7 @@ const RegisterPage = () => {
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
+
           <input
             type="password"
             placeholder="Password"
@@ -45,15 +48,6 @@ const RegisterPage = () => {
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
-          <select
-            className="border p-2 w-full mb-3 rounded focus:outline-indigo-500"
-            value={form.role}
-            onChange={(e) => setForm({ ...form, role: e.target.value })}
-          >
-            <option value="">Select Role</option>
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
 
           {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
 

@@ -1,10 +1,10 @@
 import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const api = axios.create({
-// baseURL: import.meta.env.VITE_API_URL || "http:////localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
 
- baseURL: "https://quiznova-app-a24g.onrender.com/api",
-
+  // baseURL: "https://quiznova-app-a24g.onrender.com/api",
 });
 
 // ✅ Automatically attach token to every request
@@ -77,6 +77,28 @@ export const getUserResults = async (userId) => {
   return res.data;
 };
 
+export const getUsers = async () => {
+  const res = await api.get("/users/all");
+  return res.data;
+};
+
+export const toggleAdmin = async (id) => {
+  const res = await api.put(`/users/toggle-admin/${id}`);
+  return res.data;
+};
+// User requests admin access
+export const requestAdminAccess = () => api.post("/users/request-admin");
+// Admin gets pending requests
+export const getAdminRequests = () => api.get("/users/admin/requests");
+
+// Admin approves or rejects
+export const processAdminRequest = (id, decision) =>
+  api.put(`/users/admin/handle-request/${id}`, { decision });
+
+
+
+
+
 // ✅ Get admin stats
 export const getAdminStats = async () => {
   const res = await api.get("/admin/stats");
@@ -84,9 +106,59 @@ export const getAdminStats = async () => {
 };
 
 // ✅ Get Leaderboard
-export const getLeaderboard =async () => {
-  const res =await api.get("/leaderboard");
+export const getLeaderboard = async () => {
+  const res = await api.get("/leaderboard");
   return res.data;
 };
+
+// 🧩 Get today's daily challenge
+export const getDailyChallenge = async () => {
+  try {
+    const res = await api.get("/daily");
+
+    // prevent duplicate toast
+    if (!sessionStorage.getItem("challengeToastShown")) {
+      toast.success("🎯 Daily Challenge Loaded!");
+      sessionStorage.setItem("challengeToastShown", "true");
+    }
+
+    return res.data;
+  } catch (err) {
+    toast.error("⚠️ Failed to load challenge!");
+    throw err;
+  }
+};
+
+
+// 🧠 Submit daily challenge
+export const submitDailyChallenge = async (userAnswer) => {
+  try {
+    const res = await api.post("/daily/submit", { userAnswer });
+    const { correct, streak } = res.data;
+
+    // 🎉 Custom feedback
+    if (correct) {
+      const messages = [
+        "🔥 You're on fire!",
+        "💪 Keep that streak alive!",
+        "🏆 Champion mode activated!",
+        "⚡ Unstoppable energy!",
+      ];
+
+      toast.success(
+        `✅ Correct!\n🔥 Streak: ${streak} days\n${messages[Math.floor(Math.random() * messages.length)]}`,
+        { icon: "🏆", duration: 4000 }
+      );
+    } else {
+      toast.error("❌ Wrong answer — but keep going!");
+    }
+
+    return res.data;
+  } catch (err) {
+    toast.error("⚠️ Submission failed! Try again.");
+    throw err;
+  }
+};
+
 
 export default api;

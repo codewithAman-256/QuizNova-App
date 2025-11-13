@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -19,10 +19,25 @@ import AdminDashboard from "./pages/AdminDashboard.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
 import Footer from "./components/Footer.jsx";
 import Leaderboard from "./pages/Leaderboard.jsx";
-import { Toaster } from "react-hot-toast";
+import DailyChallengePage from "./pages/DailyChallengePage.jsx";
+import { Toaster, toast } from "react-hot-toast";
 
 function AppContent() {
   const { user } = useContext(AuthContext);
+
+// 🔔 Daily reminder toast (once per day)
+  useEffect(() => {
+    const lastVisit = localStorage.getItem("lastVisit");
+    const today = new Date().toDateString();
+
+    if (lastVisit !== today) {
+      toast("🔥 Don’t forget to complete your daily challenge!", {
+        icon: "⚡",
+        duration: 4000,
+      });
+      localStorage.setItem("lastVisit", today);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -42,7 +57,7 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
-
+          <Route path="/daily" element={<DailyChallengePage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/quizList" element={<QuizList />} />
           <Route path="/attempt" element={<QuizAttempt />} />
@@ -60,6 +75,7 @@ function AppContent() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Routes>
+        {/* 🧩 Global toast system */}
         <Toaster
             position="top-right"
             reverseOrder={false}

@@ -6,6 +6,7 @@ import { AuthContext } from "../context/AuthContext";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+
   const { user, logout } = useContext(AuthContext);
 
   return (
@@ -13,7 +14,7 @@ const Navbar = () => {
       <nav className="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* 🌟 Logo */}
+            {/* LOGO */}
             <Link
               to="/"
               className="text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
@@ -21,7 +22,7 @@ const Navbar = () => {
               QuizNova
             </Link>
 
-            {/* 💻 Desktop Links */}
+            {/* DESKTOP MENU */}
             <div className="hidden md:flex items-center space-x-6">
               <Link
                 to="/"
@@ -42,7 +43,6 @@ const Navbar = () => {
                 Dashboard
               </Link>
 
-              {/* 🧑‍💼 Admin Only */}
               {user?.role === "admin" && (
                 <Link
                   to="/admin"
@@ -52,43 +52,55 @@ const Navbar = () => {
                 </Link>
               )}
 
-              {/* 👤 Profile Dropdown */}
+              {/* PROFILE DROPDOWN */}
               {user ? (
                 <div className="relative">
                   <div
                     onClick={() => setShowMenu(!showMenu)}
                     className="relative cursor-pointer"
                   >
-                    {/* 🔥 Streak Flame (optional) */}
+                    {/* STREAK BADGE */}
                     {user.streakCount > 0 && (
                       <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow">
                         🔥 {user.streakCount}
                       </div>
                     )}
 
+                    {/* USER AVATAR */}
                     <img
                       src={user.avatar || "/default-avatar.png"}
-                      alt="Profile"
+                      alt="avatar"
                       className="w-10 h-10 rounded-full border-2 border-yellow-400 object-cover hover:scale-105 transition"
                     />
                   </div>
 
+                  {/* DROPDOWN PANEL */}
                   {showMenu && (
                     <div className="absolute right-0 mt-2 w-44 bg-white shadow-lg rounded-lg py-2 z-50">
                       <Link
                         to="/profile"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                         onClick={() => setShowMenu(false)}
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                       >
                         👤 Profile
                       </Link>
+
+                      <Link
+                        to="/daily"
+                        onClick={() => setShowMenu(false)}
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      >
+                        🎯 Daily Challenge
+                      </Link>
+
                       <Link
                         to="/leaderboard"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                         onClick={() => setShowMenu(false)}
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                       >
                         🏆 Leaderboard
                       </Link>
+
                       <button
                         onClick={() => {
                           logout();
@@ -119,7 +131,7 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* 📱 Mobile Menu Button */}
+            {/* MOBILE MENU BUTTON */}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="md:hidden text-gray-700 focus:outline-none"
@@ -129,45 +141,53 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* 📱 Mobile Menu */}
+        {/* MOBILE MENU */}
         {isOpen && (
-          <div className="md:hidden bg-white/95 backdrop-blur-sm border-t border-gray-100 shadow-lg">
-            <div className="flex flex-col items-center space-y-4 py-5">
+          <div className="md:hidden bg-white/95 backdrop-blur-xl border-t border-gray-200 shadow-xl py-6">
+            <div className="flex flex-col items-center space-y-5">
               <Link
                 to="/"
                 onClick={() => setIsOpen(false)}
-                className="text-gray-700 hover:text-blue-600 font-medium"
+                className="text-lg font-medium"
               >
-                Home
+                🏠 Home
               </Link>
               <Link
                 to="/quizList"
                 onClick={() => setIsOpen(false)}
-                className="text-gray-700 hover:text-blue-600 font-medium"
+                className="text-lg font-medium"
               >
-                Quizzes
+                🧠 Quizzes
+              </Link>
+              <Link
+                to="/daily"
+                onClick={() => setIsOpen(false)}
+                className="text-lg font-medium"
+              >
+                🔥 Daily
               </Link>
               <Link
                 to="/dashboard"
                 onClick={() => setIsOpen(false)}
-                className="text-gray-700 hover:text-blue-600 font-medium"
+                className="text-lg font-medium"
               >
-                Dashboard
+                📈 Dashboard
               </Link>
               <Link
                 to="/leaderboard"
                 onClick={() => setIsOpen(false)}
-                className="text-gray-700 hover:text-blue-600 font-medium"
+                className="text-lg font-medium"
               >
                 🏆 Leaderboard
               </Link>
+
               {user?.role === "admin" && (
                 <Link
                   to="/admin"
                   onClick={() => setIsOpen(false)}
-                  className="text-gray-700 hover:text-blue-600 font-medium"
+                  className="text-lg font-medium"
                 >
-                  Admin
+                  🛠️ Admin Panel
                 </Link>
               )}
 
@@ -176,18 +196,19 @@ const Navbar = () => {
                   <Link
                     to="/profile"
                     onClick={() => setIsOpen(false)}
-                    className="text-gray-700 hover:text-blue-600 font-medium"
+                    className="text-lg font-medium"
                   >
-                    👋 {user.name || "User"}
+                    🙋‍♂️ {user.name}
                   </Link>
+
                   <button
                     onClick={() => {
                       logout();
                       setIsOpen(false);
                     }}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all"
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg text-lg"
                   >
-                    Logout
+                    🚪 Logout
                   </button>
                 </>
               ) : (
@@ -195,16 +216,16 @@ const Navbar = () => {
                   <Link
                     to="/login"
                     onClick={() => setIsOpen(false)}
-                    className="text-gray-700 hover:text-blue-600 font-medium"
+                    className="text-lg font-medium"
                   >
-                    Login
+                    🔑 Login
                   </Link>
                   <Link
                     to="/register"
                     onClick={() => setIsOpen(false)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all"
+                    className="bg-blue-600 text-white px-5 py-2 rounded-lg text-lg"
                   >
-                    Sign Up
+                    ✍️ Sign Up
                   </Link>
                 </>
               )}
@@ -213,10 +234,10 @@ const Navbar = () => {
         )}
       </nav>
 
-      {/* 🏆 Floating Leaderboard Button (Mobile) */}
+      {/* FLOATING LEADERBOARD BUTTON (Mobile) */}
       <Link
         to="/leaderboard"
-        className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-lg hover:scale-110 transition-all md:hidden"
+        className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-lg md:hidden"
       >
         <Trophy size={22} />
       </Link>
