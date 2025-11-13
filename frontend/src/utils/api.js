@@ -2,9 +2,9 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+//  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
 
-  // baseURL: "https://quiznova-app-a24g.onrender.com/api",
+ baseURL: "https://quiznova-app-a24g.onrender.com/api",
 });
 
 // ✅ Automatically attach token to every request
