@@ -10,15 +10,14 @@ const ResultTable = ({ results }) => {
   }
 
   return (
-    <div className="w-full overflow-x-auto bg-white/90 backdrop-blur-xl border border-indigo-100 rounded-2xl shadow-xl p-4 sm:p-6">
-
+    <div className="w-full overflow-x-auto bg-white/80 backdrop-blur-xl border border-indigo-100 rounded-2xl shadow-xl p-4 sm:p-6">
       <table className="min-w-max w-full text-sm sm:text-base">
         <thead>
-          <tr className="bg-indigo-600 text-white">
-            <th className="p-3 text-left whitespace-nowrap">📅 Date</th>
-            <th className="p-3 text-left whitespace-nowrap">📊 Score</th>
-            <th className="p-3 text-left whitespace-nowrap">❓ Total Questions</th>
-            <th className="p-3 text-left whitespace-nowrap">📈 Percentage</th>
+          <tr className="text-gray-700 border-b">
+            <th className="p-3 text-left font-semibold">📅 Date</th>
+            <th className="p-3 text-left font-semibold">📊 Score</th>
+            <th className="p-3 text-left font-semibold">❓ Questions</th>
+            <th className="p-3 text-left font-semibold">📈 Percentage</th>
           </tr>
         </thead>
 
@@ -35,25 +34,19 @@ const ResultTable = ({ results }) => {
             return (
               <tr
                 key={i}
-                className="border-t hover:bg-indigo-50/70 transition-all"
+                className="border-b border-gray-100 hover:bg-indigo-50/60 transition-all"
               >
-                {/* DATE */}
-                <td className="p-3 font-medium text-gray-800 whitespace-nowrap">
+                <td className="p-3 whitespace-nowrap">
                   {new Date(r.createdAt).toLocaleDateString()}
                 </td>
 
-                {/* SCORE */}
                 <td className="p-3 font-semibold text-indigo-700 whitespace-nowrap">
                   {r.score}
                 </td>
 
-                {/* TOTAL */}
-                <td className="p-3 text-gray-700 whitespace-nowrap">
-                  {r.totalQuestions}
-                </td>
+                <td className="p-3">{r.totalQuestions}</td>
 
-                {/* PERCENTAGE BADGE */}
-                <td className="p-3 whitespace-nowrap">
+                <td className="p-3">
                   <span
                     className={`px-3 py-1 rounded-full text-white text-xs sm:text-sm font-medium ${badgeColor}`}
                   >
@@ -65,7 +58,6 @@ const ResultTable = ({ results }) => {
           })}
         </tbody>
       </table>
-
     </div>
   );
 };

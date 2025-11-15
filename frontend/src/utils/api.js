@@ -2,9 +2,11 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 
 const api = axios.create({
-//  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  //baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
 
- baseURL: "https://quiznova-app-a24g.onrender.com/api",
+  baseURL: "https://quiznova-app-a24g.onrender.com/api",
+
+  withCredentials: true,
 });
 
 // ✅ Automatically attach token to every request
@@ -34,7 +36,9 @@ export const getQuizzes = async (options = {}) => {
   const res = await api.get(`/quizzes`, { params });
   return res.data;
 };
-
+/* ============================
+    Quizzes API
+============================= */
 // ✅ Get quizzes by category
 export const getQuizzesByCategory = async (category) => {
   const res = await api.get(`/quizzes/category/${category}`);
@@ -65,6 +69,10 @@ export const deleteQuiz = async (id) => {
   return res.data;
 };
 
+/* ============================
+    Result API
+============================= */
+
 // ✅ Save quiz result
 export const saveResult = async (resultData) => {
   const res = await api.post("/results", resultData);
@@ -76,6 +84,42 @@ export const getUserResults = async (userId) => {
   const res = await api.get(`/results/user/${userId}`);
   return res.data;
 };
+
+/* ============================
+   🧑‍💼 PROFILE API
+============================= */
+
+// ✅ Get profile
+export const getProfile = async () => {
+  try {
+    const res = await api.get("/profile");
+    return res.data;
+  } catch (err) {
+    toast.error("Failed to load profile");
+    throw err;
+  }
+};
+
+// ✅ Update profile (name + email)
+export const updateProfile = async (formData) => {
+  const res = await api.put("/profile/update", formData);
+  return res.data;
+};
+
+// ✅ Update avatar
+export const uploadAvatar = async (file) => {
+  const fd = new FormData();
+  fd.append("avatar", file);
+
+  const res = await api.post("/profile/avatar", fd, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  return res.data;
+};
+/* ============================
+   🧑‍💼 ADMIN And Super Admin Leaderboard API
+============================= */
 
 export const getUsers = async () => {
   const res = await api.get("/users/all");
@@ -95,10 +139,6 @@ export const getAdminRequests = () => api.get("/users/admin/requests");
 export const processAdminRequest = (id, decision) =>
   api.put(`/users/admin/handle-request/${id}`, { decision });
 
-
-
-
-
 // ✅ Get admin stats
 export const getAdminStats = async () => {
   const res = await api.get("/admin/stats");
@@ -110,33 +150,38 @@ export const getLeaderboard = async () => {
   const res = await api.get("/leaderboard");
   return res.data;
 };
+/* ============================
+   🎯 DAILY CHALLENGE API
+============================= */
 
 // 🧩 Get today's daily challenge
 export const getDailyChallenge = async () => {
   try {
     const res = await api.get("/daily");
 
-    // prevent duplicate toast
+    // Avoid multiple notifications
     if (!sessionStorage.getItem("challengeToastShown")) {
       toast.success("🎯 Daily Challenge Loaded!");
       sessionStorage.setItem("challengeToastShown", "true");
     }
 
-    return res.data;
+    return res.data; // { question, options, difficulty }
   } catch (err) {
-    toast.error("⚠️ Failed to load challenge!");
+    console.error("Daily challenge fetch error:", err);
+    toast.error("⚠️ Failed to load today's challenge.");
     throw err;
   }
 };
-
 
 // 🧠 Submit daily challenge
 export const submitDailyChallenge = async (userAnswer) => {
   try {
     const res = await api.post("/daily/submit", { userAnswer });
-    const { correct, streak } = res.data;
 
-    // 🎉 Custom feedback
+    // eslint-disable-next-line no-unused-vars
+    const { correct, streak, xp, message } = res.data;
+
+    // 🎉 Dynamic success / error feedback (from backend)
     if (correct) {
       const messages = [
         "🔥 You're on fire!",
@@ -146,19 +191,21 @@ export const submitDailyChallenge = async (userAnswer) => {
       ];
 
       toast.success(
-        `✅ Correct!\n🔥 Streak: ${streak} days\n${messages[Math.floor(Math.random() * messages.length)]}`,
+        `✅ Correct!\n🔥 Streak: ${streak} days\n⚡ XP: ${xp}\n${
+          messages[Math.floor(Math.random() * messages.length)]
+        }`,
         { icon: "🏆", duration: 4000 }
       );
     } else {
-      toast.error("❌ Wrong answer — but keep going!");
+      toast.error(`❌ Wrong answer — but you still earned XP! (${xp})`);
     }
 
-    return res.data;
+    return res.data; // return { correct, streak, xp, message }
   } catch (err) {
-    toast.error("⚠️ Submission failed! Try again.");
+    console.error("Submit error:", err);
+    toast.error("⚠️ Submission failed. Try again.");
     throw err;
   }
 };
-
 
 export default api;

@@ -25,7 +25,7 @@ import { Toaster, toast } from "react-hot-toast";
 function AppContent() {
   const { user } = useContext(AuthContext);
 
-// 🔔 Daily reminder toast (once per day)
+  // 🔔 Daily reminder toast (once per day)
   useEffect(() => {
     const lastVisit = localStorage.getItem("lastVisit");
     const today = new Date().toDateString();
@@ -49,7 +49,7 @@ function AppContent() {
             path="/admin"
             element={
               <ProtectedRoute>
-                {user?.role === "admin" ? (
+                {user?.role === "admin" || user?.role === "superadmin" ? (
                   <AdminDashboard />
                 ) : (
                   <Navigate to="/" />
@@ -57,13 +57,14 @@ function AppContent() {
               </ProtectedRoute>
             }
           />
+
           <Route path="/daily" element={<DailyChallengePage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/quizList" element={<QuizList />} />
           <Route path="/attempt" element={<QuizAttempt />} />
           <Route path="/result" element={<ResultPage />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/leaderboard" element={<Leaderboard/>}></Route>
+          <Route path="/leaderboard" element={<Leaderboard />}></Route>
           <Route
             path="/dashboard"
             element={
@@ -77,13 +78,13 @@ function AppContent() {
         </Routes>
         {/* 🧩 Global toast system */}
         <Toaster
-            position="top-right"
-            reverseOrder={false}
-            toastOptions={{
-              success: { style: { background: "#4ade80", color: "#fff" } },
-              error: { style: { background: "#f87171", color: "#fff" } },
-            }}
-          />
+          position="top-right"
+          reverseOrder={false}
+          toastOptions={{
+            success: { style: { background: "#4ade80", color: "#fff" } },
+            error: { style: { background: "#f87171", color: "#fff" } },
+          }}
+        />
       </main>
       <Footer />
     </div>

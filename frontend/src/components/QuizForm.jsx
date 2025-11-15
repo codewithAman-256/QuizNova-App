@@ -1,12 +1,9 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { createQuiz, updateQuiz } from "../utils/api";
-import { useAuth } from "../hooks/useAuth";
 import toast from "react-hot-toast";
 
 const QuizForm = ({ quiz, onSuccess }) => {
-  const { user } = useAuth();
-
   const [form, setForm] = useState({
     question: "",
     options: ["", "", "", ""],
@@ -23,6 +20,14 @@ const QuizForm = ({ quiz, onSuccess }) => {
         correctAnswer: quiz.correctAnswer || "",
         category: quiz.category || "",
         difficulty: quiz.difficulty || "Easy",
+      });
+    } else {
+      setForm({
+        question: "",
+        options: ["", "", "", ""],
+        correctAnswer: "",
+        category: "",
+        difficulty: "Easy",
       });
     }
   }, [quiz]);
@@ -48,15 +53,8 @@ const QuizForm = ({ quiz, onSuccess }) => {
         toast.success("Quiz created!");
       }
 
-      setForm({
-        question: "",
-        options: ["", "", "", ""],
-        correctAnswer: "",
-        category: "",
-        difficulty: "Easy",
-      });
       onSuccess();
-    } catch (error) {
+    } catch {
       toast.error("Error saving quiz");
     }
   };
@@ -64,78 +62,110 @@ const QuizForm = ({ quiz, onSuccess }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-4 bg-gray-50 rounded shadow border border-gray-200"
+      className="space-y-4 bg-gray-50 rounded-2xl border border-gray-200 p-4 sm:p-5"
     >
-      <div className="mb-4">
-        <h2 className="text-2xl font-semibold mb-5 text-indigo-700">
-    🧩 Manage Quizzes
-  </h2>
-        <input
-          type="text"
+      <h2 className="text-xl font-semibold mb-1 text-indigo-700">
+        🧩 {quiz ? "Edit Quiz" : "Create New Quiz"}
+      </h2>
+      <p className="text-xs text-gray-500 mb-3">
+        Add or update quiz details below.
+      </p>
+
+      {/* Question */}
+      <div>
+        <label className="text-sm font-medium text-gray-700 mb-1 block">
+          Question
+        </label>
+        <textarea
           name="question"
           placeholder="Enter quiz question"
           value={form.question}
           onChange={handleChange}
-          className="border p-2 w-full rounded"
+          className="border p-2.5 w-full rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+          rows={3}
           required
         />
       </div>
 
       {/* Options */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        {form.options.map((opt, index) => (
-          <input
-            key={index}
-            type="text"
-            placeholder={`Option ${index + 1}`}
-            value={opt}
-            onChange={(e) => handleOptionChange(index, e.target.value)}
-            className="border p-2 rounded"
-            required
-          />
-        ))}
+      <div>
+        <label className="text-sm font-medium text-gray-700 mb-1 block">
+          Options
+        </label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {form.options.map((opt, index) => (
+            <input
+              key={index}
+              type="text"
+              placeholder={`Option ${index + 1}`}
+              value={opt}
+              onChange={(e) => handleOptionChange(index, e.target.value)}
+              className="border p-2.5 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+              required
+            />
+          ))}
+        </div>
       </div>
 
       {/* Correct Answer */}
-      <div className="mb-4">
+      <div>
+        <label className="text-sm font-medium text-gray-700 mb-1 block">
+          Correct Answer
+        </label>
         <input
           type="text"
           name="correctAnswer"
-          placeholder="Correct Answer"
+          placeholder="Type the correct answer exactly as one of the options"
           value={form.correctAnswer}
           onChange={handleChange}
-          className="border p-2 w-full rounded"
+          className="border p-2.5 w-full rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
           required
         />
       </div>
 
       {/* Category & Difficulty */}
-      <div className="flex gap-4 mb-4">
-        <input
-          type="text"
-          name="category"
-          placeholder="Category"
-          value={form.category}
-          onChange={handleChange}
-          className="border p-2 w-full rounded"
-          required
-        />
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex-1">
+          <label className="text-sm font-medium text-gray-700 mb-1 block">
+            Category
+          </label>
+          <input
+            type="text"
+            name="category"
+            placeholder="e.g. JavaScript, React"
+            value={form.category}
+            onChange={handleChange}
+            className="border p-2.5 w-full rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+            required
+          />
+        </div>
 
-        <select
-          name="difficulty"
-          value={form.difficulty}
-          onChange={handleChange}
-          className="border p-2 rounded"
-        >
-          <option value="Easy">Easy</option>
-          <option value="Medium">Medium</option>
-          <option value="Hard">Hard</option>
-        </select>
+        <div className="w-full sm:w-40">
+          <label className="text-sm font-medium text-gray-700 mb-1 block">
+            Difficulty
+          </label>
+          <select
+            name="difficulty"
+            value={form.difficulty}
+            onChange={handleChange}
+            className="border p-2.5 w-full rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+          >
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+        </div>
       </div>
 
-      <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-        {quiz ? "Update Quiz" : "Add Quiz"}
-      </button>
+      {/* Submit */}
+      <div className="flex justify-end gap-2 pt-2">
+        <button
+          type="submit"
+          className="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-green-700 transition shadow"
+        >
+          {quiz ? "Update Quiz" : "Add Quiz"}
+        </button>
+      </div>
     </form>
   );
 };

@@ -1,90 +1,124 @@
 import DailyChallenge from "../models/DailyChallenge.js";
 import Streak from "../models/Streak.js";
 import User from "../models/User.js";
+import Quiz from "../models/Quiz.js";
 
-// 🧩 Get today’s challenge
+// 🧩 GET TODAY'S DAILY CHALLENGE (random quiz once per day)
 export const getTodayChallenge = async (req, res) => {
-  const today = new Date().toISOString().split("T")[0]; // yyyy-mm-dd
+  try {
+    const today = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
 
-  // Find challenge for exact today
-  let challenge = await DailyChallenge.findOne({ date: today });
+    // Check if today's challenge already exists
+    let daily = await DailyChallenge.findOne({ date: today }).populate("quizId");
 
-  // If not exists → create one
-  if (!challenge) {
-    challenge = new DailyChallenge({
-      date: today,  // FIX #1 — store today's date
-      question: "Which method converts JSON data to a JavaScript object?",
-      options: ["JSON.parse()", "JSON.stringify()", "JSON.convert()", "JSON.toObj()"],
-      correctAnswer: "JSON.parse()",
-      difficulty: "easy",
+    // If exists → return the quiz directly
+    if (daily) {
+      return res.json({
+        question: daily.quizId.question,
+        options: daily.quizId.options,
+        difficulty: daily.quizId.difficulty,
+      });
+    }
+
+    // Fetch all quizzes
+    const quizzes = await Quiz.find();
+    if (quizzes.length === 0) {
+      return res.status(404).json({ message: "No quizzes available" });
+    }
+
+    // Pick one random quiz
+    const randomQuiz = quizzes[Math.floor(Math.random() * quizzes.length)];
+
+    // Create today's daily challenge
+    daily = new DailyChallenge({
+      date: today,
+      quizId: randomQuiz._id,
     });
 
-    await challenge.save();
-  }
+    await daily.save();
 
-  res.json(challenge);
+    return res.json({
+      question: randomQuiz.question,
+      options: randomQuiz.options,
+      difficulty: randomQuiz.difficulty,
+    });
+  } catch (err) {
+    console.error("Daily challenge error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
-// 🧠 Submit daily challenge
+
+// 🧠 SUBMIT DAILY CHALLENGE
 export const submitDailyChallenge = async (req, res) => {
-  const { userAnswer } = req.body;
-  const userId = req.user.id;
-  const today = new Date();
-  const todayStr = today.toISOString().split("T")[0];
+  try {
+    const { userAnswer } = req.body;
+    const userId = req.user.id;
 
-  const challenge = await DailyChallenge.findOne({
-    date: { $gte: new Date(todayStr) },
-  });
-  if (!challenge) return res.status(404).json({ message: "No challenge found" });
+    const todayStr = new Date().toISOString().split("T")[0];
 
-  const correct = challenge.correctAnswer === userAnswer;
+    // Get today's challenge + quiz data
+    const daily = await DailyChallenge.findOne({ date: todayStr }).populate("quizId");
 
-  // Find or create streak
-  let streak = await Streak.findOne({ userId });
-  if (!streak) {
-    streak = new Streak({ userId, currentStreak: 0 });
+    if (!daily) {
+      return res.status(404).json({ message: "No challenge found" });
+    }
+
+    const quiz = daily.quizId;
+
+    const correct = quiz.correctAnswer === userAnswer;
+
+    // ⭐ Find or create streak
+    let streak = await Streak.findOne({ userId });
+    if (!streak) {
+      streak = new Streak({ userId, currentStreak: 0 });
+      await streak.save();
+    }
+
+    const lastDate = streak.lastQuizDate
+      ? new Date(streak.lastQuizDate).toISOString().split("T")[0]
+      : null;
+
+    // ⛔ Already completed today?
+    if (lastDate === todayStr) {
+      return res.json({
+        correct,
+        message: "You’ve already completed today’s challenge!",
+        streak: streak.currentStreak,
+      });
+    }
+
+    // 🔥 Check streak continuation
+    const yesterday = new Date(Date.now() - 86400000)
+      .toISOString()
+      .split("T")[0];
+
+    if (lastDate === yesterday) {
+      streak.currentStreak += 1;
+    } else {
+      streak.currentStreak = 1;
+    }
+
+    streak.lastQuizDate = new Date();
     await streak.save();
-  }
 
-  const lastQuizDate = streak.lastQuizDate
-    ? new Date(streak.lastQuizDate).toISOString().split("T")[0]
-    : null;
+    // ⭐ XP SYSTEM
+    const xpEarned = correct ? 10 : 2;
 
-  // ✅ Only count once per day
-  if (lastQuizDate === todayStr) {
-    return res.json({
+    const user = await User.findById(userId);
+    user.xp = (user.xp || 0) + xpEarned;
+    await user.save();
+
+    res.json({
       correct,
-      message: "You’ve already completed today’s challenge ✅",
       streak: streak.currentStreak,
+      xp: user.xp,
+      message: correct
+        ? `✅ Correct! +${xpEarned} XP earned!`
+        : `❌ Wrong — but you still earned +${xpEarned} XP`,
     });
+  } catch (err) {
+    console.error("Submit challenge error:", err);
+    res.status(500).json({ message: "Server error" });
   }
-
-  // 🔥 Handle streak continuation or reset
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
-  const yesterdayStr = yesterday.toISOString().split("T")[0];
-
-  if (lastQuizDate === yesterdayStr) {
-    streak.currentStreak += 1;
-  } else {
-    streak.currentStreak = 1;
-  }
-
-  streak.lastQuizDate = today;
-  await streak.save();
-
-  // 🪙 Add XP or coins
-  const xpEarned = correct ? 10 : 2;
-  const user = await User.findById(userId);
-  user.xp = (user.xp || 0) + xpEarned;
-  await user.save();
-
-  res.json({
-    correct,
-    message: correct
-      ? `✅ Correct! +${xpEarned} XP earned!`
-      : `❌ Incorrect! But you still earned +${xpEarned} XP for trying.`,
-    streak: streak.currentStreak,
-    xp: user.xp,
-  });
 };

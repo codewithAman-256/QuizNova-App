@@ -1,13 +1,18 @@
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Trophy } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-
   const { user, logout } = useContext(AuthContext);
+  const location = useLocation();
+
+  const isActive = (path) =>
+    location.pathname === path
+      ? "text-blue-600 font-semibold"
+      : "text-gray-700 hover:text-blue-600";
 
   return (
     <>
@@ -24,29 +29,35 @@ const Navbar = () => {
 
             {/* DESKTOP MENU */}
             <div className="hidden md:flex items-center space-x-6">
-              <Link
-                to="/"
-                className="text-gray-700 hover:text-blue-600 font-medium"
-              >
+              <Link to="/" className={`${isActive("/")} font-medium`}>
                 Home
               </Link>
               <Link
                 to="/quizList"
-                className="text-gray-700 hover:text-blue-600 font-medium"
+                className={`${isActive("/quizList")} font-medium`}
               >
                 Quizzes
               </Link>
+              <Link to="/daily" className={`${isActive("/daily")} font-medium`}>
+                Daily
+              </Link>
+              <Link
+                to="/leaderboard"
+                className={`${isActive("/leaderboard")} font-medium`}
+              >
+                Leaderboard
+              </Link>
               <Link
                 to="/dashboard"
-                className="text-gray-700 hover:text-blue-600 font-medium"
+                className={`${isActive("/dashboard")} font-medium`}
               >
                 Dashboard
               </Link>
 
-              {user?.role === "admin" && (
+              {(user?.role === "admin" || user?.role === "superadmin") && (
                 <Link
                   to="/admin"
-                  className="text-gray-700 hover:text-blue-600 font-medium"
+                  className={`${isActive("/admin")} font-medium`}
                 >
                   Admin
                 </Link>
@@ -55,13 +66,14 @@ const Navbar = () => {
               {/* PROFILE DROPDOWN */}
               {user ? (
                 <div className="relative">
-                  <div
-                    onClick={() => setShowMenu(!showMenu)}
-                    className="relative cursor-pointer"
+                  <button
+                    type="button"
+                    onClick={() => setShowMenu((prev) => !prev)}
+                    className="relative cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white"
                   >
                     {/* STREAK BADGE */}
                     {user.streakCount > 0 && (
-                      <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow">
+                      <div className="absolute -top-2 -right-2 bg-orange-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow">
                         🔥 {user.streakCount}
                       </div>
                     )}
@@ -69,10 +81,10 @@ const Navbar = () => {
                     {/* USER AVATAR */}
                     <img
                       src={user.avatar || "/default-avatar.png"}
-                      alt="avatar"
-                      className="w-10 h-10 rounded-full border-2 border-yellow-400 object-cover hover:scale-105 transition"
+                      alt={user.name || "User avatar"}
+                      className="w-10 h-10 rounded-full border-2 border-pink-600 object-cover hover:scale-105 transition"
                     />
-                  </div>
+                  </button>
 
                   {/* DROPDOWN PANEL */}
                   {showMenu && (
@@ -123,7 +135,7 @@ const Navbar = () => {
                   </Link>
                   <Link
                     to="/register"
-                    className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-all"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-all text-sm font-medium"
                   >
                     👤 Sign Up
                   </Link>
@@ -133,8 +145,9 @@ const Navbar = () => {
 
             {/* MOBILE MENU BUTTON */}
             <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden text-gray-700 focus:outline-none"
+              onClick={() => setIsOpen((prev) => !prev)}
+              className="md:hidden text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md p-1"
+              aria-label="Toggle navigation menu"
             >
               {isOpen ? <X size={26} /> : <Menu size={26} />}
             </button>
@@ -152,6 +165,7 @@ const Navbar = () => {
               >
                 🏠 Home
               </Link>
+
               <Link
                 to="/quizList"
                 onClick={() => setIsOpen(false)}
@@ -159,6 +173,7 @@ const Navbar = () => {
               >
                 🧠 Quizzes
               </Link>
+
               <Link
                 to="/daily"
                 onClick={() => setIsOpen(false)}
@@ -166,6 +181,7 @@ const Navbar = () => {
               >
                 🔥 Daily
               </Link>
+
               <Link
                 to="/dashboard"
                 onClick={() => setIsOpen(false)}
@@ -173,6 +189,7 @@ const Navbar = () => {
               >
                 📈 Dashboard
               </Link>
+
               <Link
                 to="/leaderboard"
                 onClick={() => setIsOpen(false)}
@@ -181,7 +198,7 @@ const Navbar = () => {
                 🏆 Leaderboard
               </Link>
 
-              {user?.role === "admin" && (
+              {(user?.role === "admin" || user?.role === "superadmin") && (
                 <Link
                   to="/admin"
                   onClick={() => setIsOpen(false)}
@@ -196,7 +213,7 @@ const Navbar = () => {
                   <Link
                     to="/profile"
                     onClick={() => setIsOpen(false)}
-                    className="text-lg font-medium"
+                    className="text-lg font-medium truncate max-w-[180px]"
                   >
                     🙋‍♂️ {user.name}
                   </Link>
@@ -234,13 +251,15 @@ const Navbar = () => {
         )}
       </nav>
 
-      {/* FLOATING LEADERBOARD BUTTON (Mobile) */}
-      <Link
-        to="/leaderboard"
-        className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-lg md:hidden"
-      >
-        <Trophy size={22} />
-      </Link>
+      {/* FLOATING LEADERBOARD BUTTON (Mobile Only) */}
+      {location.pathname !== "/leaderboard" && (
+        <Link
+          to="/leaderboard"
+          className="fixed bottom-6 right-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-lg md:hidden"
+        >
+          <Trophy size={22} />
+        </Link>
+      )}
     </>
   );
 };

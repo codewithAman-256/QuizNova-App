@@ -10,130 +10,165 @@ const DailyChallengePage = () => {
   const [streak, setStreak] = useState(0);
   const [xp, setXp] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [completedToday, setCompletedToday] = useState(false);
 
+  // => Today's key for localStorage
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const localKey = `daily_completed_${todayKey}`;
+
+  // ================= FETCH DAILY CHALLENGE =====================
   useEffect(() => {
     const fetchChallenge = async () => {
       try {
         const data = await getDailyChallenge();
         setChallenge(data);
+
+        const done = localStorage.getItem(localKey) === "true";
+        if (done) setCompletedToday(true);
+
       } catch (err) {
-        console.error("Error fetching challenge:", err);
+        console.error("Daily Challenge Error:", err);
       }
     };
+
     fetchChallenge();
+    // eslint-disable-next-line
   }, []);
 
+  // ================= SUBMIT ANSWER =====================
   const handleSubmit = async () => {
-    if (!selected || isSubmitting) return;
+    if (!selected || isSubmitting || completedToday) return;
+
     setIsSubmitting(true);
 
     try {
       const data = await submitDailyChallenge(selected);
+
       setResult(data.message);
       setStreak(data.streak);
       setXp(data.xp);
+      setCompletedToday(true);
+      localStorage.setItem(localKey, "true");
 
-      if (data.correct) {
+      // Show confetti only if correct & not previously completed
+      if (data.correct && !data.alreadyCompleted) {
         confetti({
-          particleCount: 120,
+          particleCount: 150,
           spread: 70,
-          origin: { y: 0.6 },
+          origin: { y: 0.7 },
         });
       }
     } catch (err) {
-      console.error("Error submitting challenge:", err);
-      setResult("⚠️ Something went wrong. Please try again.");
+      console.error(err);
+      setResult("⚠️ Something went wrong. Try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
   };
 
-  if (!challenge) return <Loader text= "Loading challenge..."/>;
+  // ================= LOADING UI =====================
+  if (!challenge) return <Loader text="Loading Daily Challenge..." />;
 
   return (
-    <div className="p-8 max-w-lg mx-auto text-center bg-gradient-to-b from-gray-50 to-white shadow-xl rounded-2xl border border-gray-100">
-      {/* 🏆 Header */}
-      <h1 className="text-3xl font-extrabold mb-2 text-gray-800 flex items-center justify-center gap-2">
-        🔥 Daily Challenge
-      </h1>
-      <p className="text-gray-600 text-sm mb-6">
-        Test your JavaScript knowledge and keep your streak alive!
-      </p>
+    <div className="min-h-[80vh] p-6 sm:p-8 flex justify-center">
+      <div className="w-full max-w-lg bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 sm:p-8 border border-indigo-100">
 
-      {/* 💬 Question */}
-      <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-200 mb-4">
-        <p className="text-lg font-medium text-gray-800">{challenge.question}</p>
-      </div>
+        {/* HEADER */}
+        <h1 className="text-3xl font-extrabold text-center bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          🔥 Daily Challenge
+        </h1>
+        <p className="text-gray-600 text-center mt-1 mb-6">
+          Keep your streak alive and earn XP!
+        </p>
 
-      {/* 🧠 Options */}
-      <div className="space-y-2">
-        {challenge.options.map((opt) => (
-          <button
-            key={opt}
-            onClick={() => setSelected(opt)}
-            disabled={isSubmitting}
-            className={`block w-full p-3 rounded-xl border text-sm font-medium transition-all ${
-              selected === opt
-                ? "bg-blue-600 text-white border-blue-700 shadow-md scale-[1.02]"
-                : "bg-gray-100 hover:bg-gray-200 border-gray-300"
-            }`}
-          >
-            {opt}
-          </button>
-        ))}
-      </div>
+        {/* QUESTION */}
+        <div className="bg-white rounded-2xl shadow px-4 py-5 border border-gray-200">
+          <p className="text-lg font-semibold text-gray-800 text-center">
+            {challenge.quiz?.question || challenge.question}
+          </p>
+        </div>
 
-      {/* 🚀 Submit Button */}
-      <button
-        onClick={handleSubmit}
-        disabled={isSubmitting}
-        className={`mt-6 px-6 py-2.5 rounded-lg font-semibold transition-all ${
-          isSubmitting
-            ? "bg-green-400 cursor-not-allowed opacity-70"
-            : "bg-green-600 hover:bg-green-700 text-white shadow-md"
-        }`}
-      >
-        {isSubmitting ? "Submitting..." : "Submit Answer"}
-      </button>
+        {/* OPTIONS */}
+        <div className="mt-5 space-y-3">
+          {(challenge.quiz?.options || challenge.options).map((opt, i) => (
+            <button
+              key={i}
+              onClick={() => !completedToday && setSelected(opt)}
+              disabled={isSubmitting || completedToday}
+              className={`
+                w-full px-4 py-3 rounded-xl font-medium transition-all 
+                border text-sm sm:text-base shadow-sm
+                ${
+                  selected === opt
+                    ? "bg-indigo-600 text-white border-indigo-700 shadow-lg scale-[1.02]"
+                    : "bg-gray-100 border-gray-300 hover:bg-indigo-100 hover:text-indigo-700"
+                }
+                ${completedToday ? "opacity-60 cursor-not-allowed" : ""}
+              `}
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
 
-      {/* 🎯 Result Section */}
-      {result && (
-        <div className="mt-6 p-4 bg-gray-50 border rounded-xl">
-          <p className="text-lg font-semibold text-gray-800">{result}</p>
+        {/* SUBMIT BTN */}
+        <button
+          onClick={handleSubmit}
+          disabled={!selected || completedToday || isSubmitting}
+          className={`
+            mt-6 w-full py-3 rounded-xl font-semibold transition-all shadow-lg
+            ${
+              completedToday
+                ? "bg-gray-400 cursor-not-allowed text-white"
+                : isSubmitting
+                ? "bg-green-400 text-white cursor-not-allowed animate-pulse"
+                : "bg-green-600 hover:bg-green-700 text-white"
+            }
+          `}
+        >
+          {completedToday
+            ? "✔ Completed Today"
+            : isSubmitting
+            ? "Submitting..."
+            : "Submit Answer"}
+        </button>
 
-          {/* 🔥 Streak Info */}
-          <div className="mt-3 flex flex-col items-center">
-            <p className="text-sm text-gray-600">
-              🔥 Current Streak: <b>{streak}</b> days
-            </p>
-            <p className="text-sm text-gray-600">
-              ⚡ Total XP: <b>{xp}</b>
-            </p>
+        {/* RESULT */}
+        {result && (
+          <div className="mt-6 p-5 bg-white/70 rounded-2xl border shadow">
+            <p className="text-lg font-semibold text-gray-800">{result}</p>
 
-            {/* 🏅 Streak Progress Bar */}
-            <div className="w-full bg-gray-200 rounded-full h-3 mt-3 max-w-xs mx-auto">
+            {/* STREAK + XP */}
+            <div className="mt-4 text-gray-700 space-y-1 text-sm sm:text-base">
+              <p>🔥 Streak: <b>{streak}</b> days</p>
+              <p>⚡ XP Earned: <b>{xp}</b></p>
+            </div>
+
+            {/* WEEKLY PROGRESS BAR */}
+            <div className="w-full max-w-xs mx-auto mt-4 bg-gray-200 rounded-full h-3 overflow-hidden">
               <div
-                className="bg-gradient-to-r from-yellow-400 to-orange-500 h-3 rounded-full transition-all"
+                className="h-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 transition-all"
                 style={{ width: `${(streak % 7) * 14.3}%` }}
               ></div>
             </div>
-            <p className="text-xs mt-1 text-gray-500">
+
+            <p className="text-xs mt-2 text-gray-500">
               {streak % 7 === 0 && streak !== 0
-                ? "🏆 Weekly streak complete! Bonus XP unlocked!"
-                : `${7 - (streak % 7)} days left for weekly reward!`}
+                ? "🏆 Weekly streak complete! Bonus XP awarded!"
+                : `${7 - (streak % 7)} days left for weekly reward`}
             </p>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* 🌟 Bonus Message */}
-      {streak > 0 && (
-        <div className="mt-4 text-sm text-green-600 font-medium">
-          {streak >= 7
-            ? "🔥 You're unstoppable! Keep that streak going!"
-            : "💪 You're building great consistency!"}
-        </div>
-      )}
+        {/* MOTIVATION */}
+        {streak > 0 && (
+          <p className="mt-5 text-center text-green-600 font-medium text-sm">
+            {streak >= 7
+              ? "🔥 Amazing consistency! Keep going!"
+              : "💪 You're building strong habits!"}
+          </p>
+        )}
+      </div>
     </div>
   );
 };

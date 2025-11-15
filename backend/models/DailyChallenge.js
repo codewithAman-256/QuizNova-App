@@ -1,13 +1,12 @@
 import mongoose from "mongoose";
 
 const dailyChallengeSchema = new mongoose.Schema({
-  date: { type: Date, default: Date.now },
-  question: String,
-  options: [String], 
-  correctAnswer: String,
-  difficulty: String,
+  date: { type: String, required: true },  // <-- FIXED
+  quizId: {
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"Quiz",
+    required:true
+  }
 }, { timestamps: true });
 
-
-const DailyChallenge = mongoose.model("DailyChallenge",dailyChallengeSchema);
-export default DailyChallenge;
+export default mongoose.model("DailyChallenge", dailyChallengeSchema);

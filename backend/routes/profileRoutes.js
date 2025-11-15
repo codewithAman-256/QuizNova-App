@@ -6,7 +6,7 @@ import {upload} from "../middleware/uploadMiddleware.js";
 const router = express.Router();
 
 router.get("/", protect, getProfile);
-router.put("/", protect, updateProfile);
+router.put("/update", protect, updateProfile);
 router.post("/avatar", protect, upload.single("avatar"), updateAvatar);
 
 export default router;

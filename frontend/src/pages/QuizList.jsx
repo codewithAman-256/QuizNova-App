@@ -10,8 +10,9 @@ const QuizList = () => {
   const [category, setCategory] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [search, setSearch] = useState("");
+
   const [loading, setLoading] = useState(true);
-  const [fetching, setFetching] = useState(false); // 👈 separate fetching for smooth UX
+  const [fetching, setFetching] = useState(false);
   const [error, setError] = useState(null);
 
   // Pagination
@@ -19,17 +20,18 @@ const QuizList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const limit = 8;
 
-  // ✅ Debounced Search
+  // Debounced search
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   useEffect(() => {
     const handler = setTimeout(() => setDebouncedSearch(search), 500);
     return () => clearTimeout(handler);
   }, [search]);
 
-  // ✅ Fetch quizzes function
+  // Fetch quizzes
   const fetchQuizzes = useCallback(async () => {
     try {
       setFetching(true);
+
       const data = await getQuizzes({
         page,
         limit,
@@ -43,7 +45,6 @@ const QuizList = () => {
       setTotalPages(data?.totalPages || 1);
       setError(null);
     } catch (err) {
-      console.error("❌ Error fetching quizzes:", err);
       toast.error("Failed to load quizzes");
       setError(err.message);
     } finally {
@@ -52,25 +53,20 @@ const QuizList = () => {
     }
   }, [page, limit, category, difficulty, debouncedSearch]);
 
-  // ✅ Fetch when filters/search/page change
   useEffect(() => {
     fetchQuizzes();
   }, [fetchQuizzes]);
 
-  // ✅ Reset to page 1 when filters/search change
+  // Reset page when filters change
   useEffect(() => {
     setPage(1);
   }, [category, difficulty, search]);
 
-  // ✅ Smooth scroll on page change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [page]);
 
-    if (loading)
-    return (
-        <Loader text="Loading Quizzes..."/>
-    );
+  if (loading) return <Loader text="Loading Quizzes..." />;
 
   if (error)
     return (
@@ -80,95 +76,96 @@ const QuizList = () => {
     );
 
   return (
-    <div className="p-4 sm:p-6 min-h-[80vh] bg-gradient-to-br from-gray-50 via-white to-indigo-50 transition-all duration-300">
-      <h1 className="text-3xl font-bold text-indigo-700 mb-6 text-center drop-shadow-sm animate-fade-in">
-        🧠 Explore Quizzes
-      </h1>
+    <div className="min-h-screen px-4 py-8 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+      <div className="max-w-7xl mx-auto">
 
-      {/* Filter Bar */}
-      <FilterBar
-  search={search}
-  setSearch={setSearch}
-  category={category}
-  setCategory={setCategory}
-  difficulty={difficulty}
-  setDifficulty={setDifficulty}
-  categories={[...new Set(quizzes.map(q => q.category))]}
-  setPage={setPage}
-/>
+        {/* Page Title */}
+        <h1 className="text-3xl font-extrabold text-center bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent drop-shadow mb-8">
+          🧠 Explore Quizzes
+        </h1>
 
+        {/* Filter Bar */}
+        <FilterBar
+          search={search}
+          setSearch={setSearch}
+          category={category}
+          setCategory={setCategory}
+          difficulty={difficulty}
+          setDifficulty={setDifficulty}
+          categories={[...new Set(quizzes.map((q) => q.category))]}
+          setPage={setPage}
+        />
 
-      {/* Fetching Indicator */}
-      {fetching && (
-        <p className="text-indigo-500 text-center mt-4 animate-pulse">
-          Updating results...
-        </p>
-      )}
+        {/* Fetching indicator */}
+        {fetching && (
+          <p className="text-indigo-500 text-center mt-4 animate-pulse">
+            Updating results...
+          </p>
+        )}
 
-      {/* Quiz Cards */}
-      {quizzes.length === 0 && !fetching ? (
-        <p className="text-gray-600 text-center mt-12 text-lg animate-fade-in">
-          😕 No quizzes found. Try changing filters or search terms!
-        </p>
-      ) : (
-        <div
-          className="
-            grid 
-            grid-cols-1 
-            sm:grid-cols-2 
-            lg:grid-cols-3 
-            xl:grid-cols-4 
-            gap-6 
-            mt-8
-            px-2
-            sm:px-4
-            animate-fade-in-slow
-          "
-        >
-          {quizzes.map((quiz) => (
-            <QuizCard key={quiz._id} quiz={quiz} />
-          ))}
-        </div>
-      )}
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center mt-10 gap-2 flex-wrap animate-fade-in">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-            className={`px-4 py-2 rounded-lg border border-indigo-500 text-indigo-600 font-medium hover:bg-indigo-100 transition-all ${
-              page === 1 ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+        {/* Quiz Cards Grid */}
+        {quizzes.length === 0 ? (
+          <p className="text-gray-700 text-center mt-12 text-lg">
+            😕 No quizzes found. Try different filters!
+          </p>
+        ) : (
+          <div
+            className="
+              grid 
+              grid-cols-1
+              sm:grid-cols-2
+              lg:grid-cols-3
+              xl:grid-cols-4
+              gap-6
+              mt-8
+              animate-fade-in
+            "
           >
-            Prev
-          </button>
+            {quizzes.map((quiz) => (
+              <QuizCard key={quiz._id} quiz={quiz} />
+            ))}
+          </div>
+        )}
 
-          {Array.from({ length: totalPages }, (_, i) => (
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-10">
             <button
-              key={i + 1}
-              onClick={() => setPage(i + 1)}
-              className={`px-3 py-2 rounded-lg transition-all duration-200 ${
-                page === i + 1
-                  ? "bg-indigo-600 text-white shadow-md scale-105"
-                  : "bg-white text-gray-700 hover:bg-indigo-100"
+              disabled={page === 1}
+              onClick={() => setPage((p) => Math.max(p - 1, 1))}
+              className={`px-4 py-2 rounded-xl border border-indigo-500 text-indigo-600 hover:bg-indigo-100 transition ${
+                page === 1 ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
-              {i + 1}
+              Prev
             </button>
-          ))}
 
-          <button
-            disabled={page === totalPages}
-            onClick={() => setPage((prev) => prev + 1)}
-            className={`px-4 py-2 rounded-lg border border-indigo-500 text-indigo-600 font-medium hover:bg-indigo-100 transition-all ${
-              page === totalPages ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            Next
-          </button>
-        </div>
-      )}
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i + 1)}
+                className={`px-3 py-2 rounded-xl transition-all ${
+                  page === i + 1
+                    ? "bg-indigo-600 text-white shadow-md scale-105"
+                    : "bg-white border border-gray-200 text-gray-700 hover:bg-indigo-100"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              disabled={page === totalPages}
+              onClick={() => setPage((p) => p + 1)}
+              className={`px-4 py-2 rounded-xl border border-indigo-500 text-indigo-600 hover:bg-indigo-100 transition ${
+                page === totalPages ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

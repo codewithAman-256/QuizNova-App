@@ -11,14 +11,28 @@ import profileRoutes from "./routes/profileRoutes.js";
 import leaderboardRoutes from "./routes/leaderboardRoutes.js";
 import dailyChallengeRoutes from "./routes/dailyRoutes.js";
 import cloudinary from "./config/cloudinary.js";
+import compression from "compression";
+app.use(compression());
+
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 connectDB();
 
 const app = express();
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://quiz-nova-app.vercel.app/",
+  "https://quiznovabyaman.netlify.app",
+];
+
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://quiznovabyaman.netlify.app"],
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -50,6 +64,14 @@ app.use("/api/leaderboard", leaderboardRoutes);
 
 // DailyChallenge Routes
 app.use("/api/daily", dailyChallengeRoutes);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../frontend", "build", "index.html"));
+  });
+}
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ server running on port ${PORT}`));

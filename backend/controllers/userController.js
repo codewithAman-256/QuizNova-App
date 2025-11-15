@@ -11,17 +11,6 @@ export const getAllUsers = async (req, res) => {
   res.json(users);
 };
 
-export const makeAdmin = async (req, res) => {
-  const user = await User.findById(req.params.id);
-  if (!user) return res.status(404).json({ message: "User not found" });
-
-  user.role = user.role === "admin" ? "user" : "admin"; // toggle role
-  await user.save();
-
-  res.json({ message: "Role updated", user });
-};
-
-
 // @desc register new user
 export const registerUser = async (req,res)=>{
     const {name,email,password} =req.body;
@@ -86,7 +75,6 @@ export const toggleAdmin = async (req, res) => {
 };
 
 //Controller: User Sends Admin Request
-
 export const requestAdminRole = async (req, res) => {
   const user = await User.findById(req.user.id);
   if (!user) return res.status(404).json({ message: "User not found" });

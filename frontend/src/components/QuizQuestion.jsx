@@ -1,35 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
 
 const QuizQuestion = ({ question, onAnswer }) => {
+  const [locked, setLocked] = useState(false);
+
   if (!question) return null;
 
+  const handleClick = (option) => {
+    if (locked) return;
+    setLocked(true);
+
+    setTimeout(() => {
+      onAnswer(option);
+      setLocked(false);
+    }, 500);
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-md border p-6 w-full max-w-md mx-auto transition-all duration-300 hover:shadow-lg">
-      <h2 className="text-lg sm:text-xl font-semibold text-center mb-4">
+    <div className="w-full mt-4 bg-white/90 border border-gray-200 rounded-2xl shadow-lg p-5 sm:p-6">
+      {/* Question */}
+      <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-5 text-center">
         {question.question}
       </h2>
 
-      <div className="mb-4">
-        <p className="text-sm font-semibold mb-2">Options:</p>
-        <div className="space-y-2">
-          {question.options.map((option, index) => (
-            <button
-              key={index}
-              onClick={() => onAnswer(option)}
-              className="w-full bg-gray-100 hover:bg-indigo-100 text-gray-800 font-medium py-2 px-4 rounded-lg transition text-sm sm:text-base"
-            >
-              {option}
-            </button>
-          ))}
-        </div>
+      {/* Options */}
+      <div className="space-y-3">
+        {question.options.map((option, index) => (
+          <button
+            key={index}
+            disabled={locked}
+            onClick={() => handleClick(option)}
+            className="
+              w-full py-3 px-4 rounded-xl 
+              bg-gray-100 hover:bg-indigo-100 
+              text-gray-800 font-medium 
+              transition-all duration-200
+              border border-gray-300
+              active:scale-[0.97]
+              disabled:opacity-50 disabled:cursor-not-allowed
+            "
+          >
+            {option}
+          </button>
+        ))}
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-between text-xs sm:text-sm text-gray-600 mt-4">
-        <span>
-          <strong>Category:</strong> {question.category}
+      {/* Category & Difficulty */}
+      <div className="flex justify-between mt-6 text-xs sm:text-sm text-gray-600">
+        <span className="px-3 py-1 rounded-full bg-indigo-100 text-indigo-700">
+          {question.category}
         </span>
-        <span>
-          <strong>Difficulty:</strong> {question.difficulty}
+        <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-700 capitalize">
+          {question.difficulty}
         </span>
       </div>
     </div>

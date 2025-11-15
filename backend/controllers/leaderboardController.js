@@ -26,6 +26,7 @@ export const getLeaderboard = async (req, res) => {
         $project: {
           _id: 0,
           name: "$user.name",
+          avatar: "$user.avatar",   // ✅ ADD THIS
           totalScore: 1,
           averagePercentage: 1,
           attempts: 1,
