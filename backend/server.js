@@ -12,9 +12,10 @@ import leaderboardRoutes from "./routes/leaderboardRoutes.js";
 import dailyChallengeRoutes from "./routes/dailyRoutes.js";
 import cloudinary from "./config/cloudinary.js";
 import compression from "compression";
-app.use(compression());
-
 import { fileURLToPath } from "url";
+
+const app = express();
+app.use(compression());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,7 +23,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 connectDB();
 
-const app = express();
+
 
 const allowedOrigins = [
   "http://localhost:5173",

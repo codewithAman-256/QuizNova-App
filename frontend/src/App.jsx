@@ -78,11 +78,32 @@ function AppContent() {
         </Routes>
         {/* 🧩 Global toast system */}
         <Toaster
-          position="top-right"
+          position="bottom-center"
           reverseOrder={false}
+          gutter={12}
           toastOptions={{
-            success: { style: { background: "#4ade80", color: "#fff" } },
-            error: { style: { background: "#f87171", color: "#fff" } },
+            duration: 3000,
+            style: {
+              background: "#ffffff",
+              color: "#333",
+              padding: "12px 16px",
+              borderRadius: "12px",
+              fontSize: "14px",
+              border: "1px solid rgba(99,102,241,0.15)", // indigo border
+              boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+            },
+            success: {
+              iconTheme: {
+                primary: "#6366f1", // indigo
+                secondary: "#fff",
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: "#ef4444", // red
+                secondary: "#fff",
+              },
+            },
           }}
         />
       </main>
