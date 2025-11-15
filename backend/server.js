@@ -26,27 +26,18 @@ connectDB();
 
 
 const allowedOrigins = [
-  "http://localhost:5173",
   "https://quiz-nova-app.vercel.app",
-  "https://quiznovabyaman.netlify.app"
+  "http://localhost:5173",
+  "https://quiznovabyaman.netlify.app",
 ];
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"]
   })
 );
-
-app.options("*", cors());
-
 app.use(express.json());
 
 app.get("/", (req, res) => {
